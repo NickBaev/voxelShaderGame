@@ -1,0 +1,9 @@
+{
+  // Подсветка: slevesque.shader (сопоставляет *.comp с языком GLSL).
+  // Валидация: dtoplak.vscode-glsllint через системный glslangValidator.
+  "glsllint.glslangValidatorPath": "/usr/bin/glslangValidator",
+  "glsllint.validatorArgs": "",
+  "files.associations": {
+    "*.comp": "glsl"
+  }
+}

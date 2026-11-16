@@ -1,0 +1,50 @@
+# Taskfile для voxelgame.
+# Шейдеры: .spv собираются glslc из .comp и встраиваются через go:embed,
+# поэтому `shaders` — зависимость сборки и тестов. .spv не коммитятся.
+version: '3'
+
+tasks:
+  shaders:
+    desc: Скомпилировать GLSL compute shaders в SPIR-V
+    sources:
+      - compute/shaders/*.comp
+    generates:
+      - compute/shaders/*.comp.spv
+    vars:
+      COMP_SOURCES:
+        sh: find compute/shaders -name '*.comp'
+    cmds:
+      - for: {var: COMP_SOURCES, split: "\n"}
+        cmd: glslc -O {{.ITEM}} -o {{.ITEM}}.spv
+
+  build:
+    desc: Собрать SPIR-V и все пакеты
+    deps: [shaders]
+    cmds:
+      - go build ./...
+
+  test:
+    desc: Собрать SPIR-V и прогнать тесты
+    deps: [shaders]
+    cmds:
+      - go test ./...
+
+  run-demo:
+    desc: Запустить демо compute Этапа 2.1
+    deps: [shaders]
+    cmds:
+      - go run ./cmd/computedemo
+
+  run-smoke:
+    desc: Запустить демо compute Этапа 2.1
+    deps: [shaders]
+    cmds:
+      - go run ./cmd/initsmoke
+
+  clean:
+    desc: Удалить артефакты SPIR-V
+    cmds:
+      - rm -f compute/shaders/*.comp.spv
+
+  default:
+    deps: [shaders]
